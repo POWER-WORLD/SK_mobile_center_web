@@ -10,7 +10,7 @@ const AdminLogin = () => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [validationErrors, setValidationErrors] = useState({});
-  const { login } = useAdmin();
+  const { login, loading } = useAdmin();
   const navigate = useNavigate();
 
   const validate = () => {
@@ -20,7 +20,7 @@ const AdminLogin = () => {
     return errors;
   };
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
     setError('');
     const errors = validate();
@@ -31,10 +31,12 @@ const AdminLogin = () => {
     }
     setValidationErrors({});
 
-    if (login(username, password)) {
+    const result = await login(username, password);
+    
+    if (result.success) {
       navigate('/admin/dashboard');
     } else {
-      setError('Invalid username or password');
+      setError(result.error || 'Invalid username or password');
     }
   };
 
@@ -104,8 +106,12 @@ const AdminLogin = () => {
             )}
           </div>
 
-          <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 text-white py-6 text-lg font-semibold shadow-lg hover:shadow-xl transition-all">
-            Login to Dashboard
+          <Button 
+            type="submit" 
+            disabled={loading}
+            className="w-full bg-blue-600 hover:bg-blue-700 text-white py-6 text-lg font-semibold shadow-lg hover:shadow-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {loading ? 'Logging in...' : 'Login to Dashboard'}
           </Button>
         </form>
         

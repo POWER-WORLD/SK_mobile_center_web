@@ -8,7 +8,8 @@
 		"build": "node tools/generate-llms.js || true && vite build",
 		"preview": "vite preview --host :: --port 3000",
 		"lint": "eslint . --quiet",
-		"lint:warn": "eslint ."
+		"lint:warn": "eslint .",
+		"init-db": "node database/init-db.js"
 	},
 	"dependencies": {
 		"@radix-ui/react-alert-dialog": "^1.1.4",
@@ -21,10 +22,14 @@
 		"@radix-ui/react-slot": "^1.1.1",
 		"@radix-ui/react-tabs": "^1.1.2",
 		"@radix-ui/react-toast": "^1.2.4",
+		"bcryptjs": "^3.0.3",
 		"class-variance-authority": "^0.7.1",
 		"clsx": "^2.1.1",
+		"dotenv": "^17.2.4",
 		"framer-motion": "^11.15.0",
+		"jsonwebtoken": "^9.0.3",
 		"lucide-react": "^0.469.0",
+		"pg": "^8.18.0",
 		"react": "^18.3.1",
 		"react-dom": "^18.3.1",
 		"react-helmet": "^6.1.0",

@@ -1,12 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet';
 import { motion } from 'framer-motion';
 import { 
   FileText, CreditCard, Printer, Scan, Shield, Heart, Users, 
   Landmark, Plane, Train, Zap, Smartphone, FileCheck, Award, 
-  Clipboard, WalletCards as IdCard, CheckCircle, Lock, Building
+  Clipboard, WalletCards as IdCard, CheckCircle, Lock, Building, Loader2
 } from 'lucide-react';
-import useLocalStorage from '@/hooks/useLocalStorage';
+import { cscServicesAPI } from '@/services/api';
 import HeroSection from '@/components/ui/HeroSection';
 import CategoryChips from '@/components/ui/CategoryChips';
 import GlassCard from '@/components/ui/GlassCard';
@@ -31,22 +31,28 @@ const ICON_MAP = {
   'Banking & Money Transfer': Smartphone
 };
 
-const DEFAULT_CSC_SERVICES = [
-  { id: 1, title: 'Online Form Filling', description: 'Jobs, Exams, Admissions', category: 'Government Services', status: 'Active' },
-  { id: 2, title: 'Aadhaar Services', description: 'New Aadhaar enrollment, updates', category: 'Government Services', status: 'Active' },
-  { id: 3, title: 'PAN Card', description: 'New PAN application, corrections', category: 'Government Services', status: 'Active' },
-  { id: 4, title: 'PM Schemes', description: 'PM Kisan, PM Awas Yojana', category: 'Government Services', status: 'Active' },
-  { id: 5, title: 'Insurance', description: 'LIC, vehicle insurance, health', category: 'Banking & Money', status: 'Active' },
-  { id: 6, title: 'Pension', description: 'Old age, widow pension applications', category: 'Banking & Money', status: 'Active' },
-  { id: 7, title: 'Digital Seva', description: 'Complete CSC digital services', category: 'Government Services', status: 'Active' },
-  { id: 8, title: 'Printing & Scan', description: 'Color/BW, Lamination', category: 'Printing & Scanning', status: 'Active' },
-  { id: 9, title: 'Passport/Visa', description: 'Application assistance', category: 'Travel & Tickets', status: 'Active' },
-  { id: 10, title: 'Bill Payments', description: 'Electricity, mobile recharge', category: 'Banking & Money', status: 'Active' },
-];
-
 function CSCServicesPage() {
-  const [services] = useLocalStorage('cscServices', DEFAULT_CSC_SERVICES);
+  const [services, setServices] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [activeCategory, setActiveCategory] = useState('All');
+
+  useEffect(() => {
+    const fetchServices = async () => {
+      try {
+        setLoading(true);
+        const data = await cscServicesAPI.getAll();
+        setServices(data);
+      } catch (err) {
+        setError(err.message);
+        console.error('Failed to fetch CSC services:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchServices();
+  }, []);
 
   // Dynamically generate categories from services
   const categories = React.useMemo(() => {
@@ -55,7 +61,7 @@ function CSCServicesPage() {
   }, [services]);
 
   const filteredServices = services.filter(s =>
-    s.status === 'Active' && (activeCategory === 'All' || s.category === activeCategory)
+    s.is_active && (activeCategory === 'All' || s.category === activeCategory)
   );
 
   return (
@@ -77,50 +83,63 @@ function CSCServicesPage() {
         />
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-20 relative z-20">
-          <div className="mb-12">
-            <CategoryChips
-              categories={categories}
-              activeCategory={activeCategory}
-              onCategoryChange={setActiveCategory}
-            />
-          </div>
-
-          <motion.div 
-            layout
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-20"
-          >
-            {filteredServices.map((service, index) => {
-              const Icon = ICON_MAP[service.title] || FileText;
-              return (
-                <GlassCard key={service.id || index} className="p-6 h-full flex flex-col">
-                  <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-500 to-green-400 flex items-center justify-center mb-6 shadow-lg text-white transform -rotate-3 group-hover:rotate-0 transition-transform duration-300">
-                    <Icon className="w-7 h-7" />
-                  </div>
-                  <h3 className="text-xl font-bold font-display text-gray-800 mb-3">{service.title}</h3>
-                  <p className="text-gray-600 text-sm leading-relaxed mb-4 flex-grow">{service.description}</p>
-                  <div className="pt-4 border-t border-gray-100/50 flex justify-between items-center">
-                    <span className="text-xs font-semibold px-3 py-1 bg-blue-50 text-blue-600 rounded-full border border-blue-100">
-                      {service.category || 'Service'}
-                    </span>
-                    <button className="text-blue-600 text-sm font-bold hover:underline">Details &rarr;</button>
-                  </div>
-                </GlassCard>
-              );
-            })}
-          </motion.div>
-
-          <div className="mb-16">
-            <div className="text-center mb-10">
-              <h2 className="text-3xl font-bold font-display text-gray-800">Why Choose Us?</h2>
-              <p className="text-gray-500 mt-2">Trusted by thousands for reliable digital services</p>
+          {loading ? (
+            <div className="flex flex-col items-center justify-center py-20">
+              <Loader2 className="w-12 h-12 text-blue-600 animate-spin mb-4" />
+              <p className="text-gray-600 font-medium">Loading services...</p>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              <TrustBadge icon={Award} title="CSC Authorized" description="Officially recognized Common Service Center" />
-              <TrustBadge icon={Lock} title="Secure & Confidential" description="Your data privacy is our top priority" />
-              <TrustBadge icon={Building} title="Govt. Approved" description="Legitimate government service provider" />
-              <TrustBadge icon={Users} title="1000+ Customers" description="Trusted by the local community" />
+          ) : error ? (
+            <div className="flex flex-col items-center justify-center py-20">
+              <p className="text-red-600 font-medium">Failed to load services. Please try again later.</p>
             </div>
-          </div>
+          ) : (
+            <>
+              <div className="mb-12">
+                <CategoryChips
+                  categories={categories}
+                  activeCategory={activeCategory}
+                  onCategoryChange={setActiveCategory}
+                />
+              </div>
+
+              <motion.div 
+                layout
+                className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-20"
+              >
+                {filteredServices.map((service, index) => {
+                  const Icon = ICON_MAP[service.name] || FileText;
+                  return (
+                    <GlassCard key={service.id || index} className="p-6 h-full flex flex-col">
+                      <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-500 to-green-400 flex items-center justify-center mb-6 shadow-lg text-white transform -rotate-3 group-hover:rotate-0 transition-transform duration-300">
+                        <Icon className="w-7 h-7" />
+                      </div>
+                      <h3 className="text-xl font-bold font-display text-gray-800 mb-3">{service.name}</h3>
+                      <p className="text-gray-600 text-sm leading-relaxed mb-4 flex-grow">{service.description}</p>
+                      <div className="pt-4 border-t border-gray-100/50 flex justify-between items-center">
+                        <span className="text-xs font-semibold px-3 py-1 bg-blue-50 text-blue-600 rounded-full border border-blue-100">
+                          {service.category || 'Service'}
+                        </span>
+                        <button className="text-blue-600 text-sm font-bold hover:underline">Details &rarr;</button>
+                      </div>
+                    </GlassCard>
+                  );
+                })}
+              </motion.div>
+
+              <div className="mb-16">
+                <div className="text-center mb-10">
+                  <h2 className="text-3xl font-bold font-display text-gray-800">Why Choose Us?</h2>
+                  <p className="text-gray-500 mt-2">Trusted by thousands for reliable digital services</p>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                  <TrustBadge icon={Award} title="CSC Authorized" description="Officially recognized Common Service Center" />
+                  <TrustBadge icon={Lock} title="Secure & Confidential" description="Your data privacy is our top priority" />
+                  <TrustBadge icon={Building} title="Govt. Approved" description="Legitimate government service provider" />
+                  <TrustBadge icon={Users} title="1000+ Customers" description="Trusted by the local community" />
+                </div>
+              </div>
+            </>
+          )}
         </div>
       </div>
     </>

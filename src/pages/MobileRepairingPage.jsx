@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet';
 import { motion } from 'framer-motion';
-import { Smartphone, Battery, Zap, Volume2, Droplets, Settings, CheckCircle, Shield, Award, Clock, Star, Wrench } from 'lucide-react';
-import useLocalStorage from '@/hooks/useLocalStorage';
+import { Smartphone, Battery, Zap, Volume2, Droplets, Settings, CheckCircle, Shield, Award, Clock, Star, Wrench, Loader2 } from 'lucide-react';
+import { repairingAPI } from '@/services/api';
 import HeroSection from '@/components/ui/HeroSection';
 import GlassCard from '@/components/ui/GlassCard';
 import TrustBadge from '@/components/ui/TrustBadge';
@@ -13,21 +13,34 @@ const ICON_MAP = {
   'Charging Port Repair': Zap,
   'Speaker & Mic': Volume2,
   'Software Issues': Settings,
+  'Software Update': Settings,
   'Water Damage': Droplets,
+  'Water Damage Repair': Droplets,
+  'Back Panel Replacement': Wrench,
   'General Checkup': Wrench
 };
 
-const DEFAULT_REPAIR_SERVICES = [
-  { id: 1, title: 'Screen Replacement', description: 'Original quality displays with 6-month warranty. Replaced in 30 mins.', time: '30-45 mins', status: 'Active' },
-  { id: 2, title: 'Battery Replacement', description: 'High capacity original batteries. Fix drainage issues instantly.', time: '20 mins', status: 'Active' },
-  { id: 3, title: 'Charging Port Repair', description: 'Fix loose connections and slow charging problems.', time: '40 mins', status: 'Active' },
-  { id: 4, title: 'Speaker & Mic', description: 'Crystal clear audio. Repair low sound or mic issues.', time: '30 mins', status: 'Active' },
-  { id: 5, title: 'Software Issues', description: 'Flashing, unlocking, and software updates for all models.', time: '1-2 hours', status: 'Active' },
-  { id: 6, title: 'Water Damage', description: 'Professional chemical wash and chip-level repair.', time: '24 hours', status: 'Active' },
-];
-
 function MobileRepairingPage() {
-  const [services] = useLocalStorage('mobileRepairing', DEFAULT_REPAIR_SERVICES);
+  const [services, setServices] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchServices = async () => {
+      try {
+        setLoading(true);
+        const data = await repairingAPI.getAll();
+        setServices(data);
+      } catch (err) {
+        setError(err.message);
+        console.error('Failed to fetch repair services:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchServices();
+  }, []);
 
   return (
     <>
@@ -48,11 +61,21 @@ function MobileRepairingPage() {
         />
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-20 relative z-20">
-          
-          {/* Services Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-20">
-            {services.filter(s => s.status === 'Active').map((service, index) => {
-              const Icon = ICON_MAP[service.title] || Smartphone;
+          {loading ? (
+            <div className="flex flex-col items-center justify-center py-32">
+              <Loader2 className="w-12 h-12 text-green-600 animate-spin mb-4" />
+              <p className="text-gray-600 font-medium">Loading services...</p>
+            </div>
+          ) : error ? (
+            <div className="flex flex-col items-center justify-center py-32">
+              <p className="text-red-600 font-medium">Failed to load services. Please try again later.</p>
+            </div>
+          ) : (
+            <>
+              {/* Services Grid */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-20">
+                {services.filter(s => s.is_active).map((service, index) => {
+              const Icon = ICON_MAP[service.service_name] || Smartphone;
               return (
                 <GlassCard key={service.id} className="p-6">
                   <div className="flex items-start justify-between mb-4">
@@ -60,11 +83,17 @@ function MobileRepairingPage() {
                       <Icon className="w-6 h-6 text-green-600" />
                     </div>
                     <span className="text-xs font-semibold bg-gray-100 text-gray-600 px-2 py-1 rounded-md flex items-center gap-1">
-                      <Clock className="w-3 h-3" /> {service.time}
+                      <Clock className="w-3 h-3" /> {service.estimated_time}
                     </span>
                   </div>
-                  <h3 className="text-xl font-bold font-display text-gray-800 mb-2">{service.title}</h3>
+                  <h3 className="text-xl font-bold font-display text-gray-800 mb-2">{service.service_name}</h3>
                   <p className="text-gray-600 text-sm leading-relaxed mb-4">{service.description}</p>
+                  {service.price_range && (
+                    <div className="flex items-center gap-2 mb-2">
+                      <Tag className="w-4 h-4 text-green-600" />
+                      <span className="text-sm font-semibold text-green-600">{service.price_range}</span>
+                    </div>
+                  )}
                   <button className="text-green-600 font-semibold text-sm hover:underline flex items-center gap-1">
                     Book Service &rarr;
                   </button>
@@ -139,7 +168,8 @@ function MobileRepairingPage() {
               <TrustBadge icon={CheckCircle} title="Data Safe" description="Your data privacy is guaranteed" />
             </div>
           </div>
-
+            </>
+          )}
         </div>
       </div>
     </>

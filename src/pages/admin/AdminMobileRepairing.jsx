@@ -1,51 +1,63 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useToast } from '@/components/ui/use-toast';
-import useLocalStorage from '@/hooks/useLocalStorage';
+import { repairingAPI } from '@/services/api';
 import AdminTable from '@/components/admin/AdminTable';
 import AdminForm from '@/components/admin/AdminForm';
-import { Plus } from 'lucide-react';
+import { Plus, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
-const DEFAULT_REPAIR_SERVICES = [
-  { id: 1, title: 'Screen Replacement', description: 'Original quality displays', status: 'Active' },
-  { id: 2, title: 'Battery Replacement', description: 'High capacity batteries', status: 'Active' },
-  { id: 3, title: 'Charging Port Repair', description: 'Fix loose connections', status: 'Active' },
-  { id: 4, title: 'Speaker & Mic', description: 'Audio issue resolution', status: 'Active' },
-  { id: 5, title: 'Software Issues', description: 'Flashing & Updates', status: 'Active' },
-  { id: 6, title: 'Water Damage', description: 'Chemical wash & repair', status: 'Active' },
-  { id: 7, title: 'General Checkup', description: 'Full diagnostic', status: 'Active' },
-];
-
 const AdminMobileRepairing = () => {
-  const [services, setServices] = useLocalStorage('mobileRepairing', DEFAULT_REPAIR_SERVICES);
+  const [services, setServices] = useState([]);
   const [isEditing, setIsEditing] = useState(false);
   const [currentItem, setCurrentItem] = useState(null);
+  const [loading, setLoading] = useState(true);
   const { toast } = useToast();
 
+  useEffect(() => {
+    fetchServices();
+  }, []);
+
+  const fetchServices = async () => {
+    try {
+      setLoading(true);
+      const data = await repairingAPI.getAll();
+      setServices(data);
+    } catch (error) {
+      toast({ title: 'Error', description: 'Failed to load services', variant: 'destructive' });
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const columns = [
-    { key: 'title', label: 'Service Name' },
+    { key: 'service_name', label: 'Service Name' },
     { key: 'description', label: 'Description' },
+    { key: 'price_range', label: 'Price Range' },
+    { key: 'estimated_time', label: 'Time Required' },
     { 
-      key: 'status', 
+      key: 'is_active', 
       label: 'Status',
-      render: (status) => (
-        <span className={`px-2 py-1 rounded-full text-xs font-semibold ${status === 'Active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
-          {status}
+      render: (is_active) => (
+        <span className={`px-2 py-1 rounded-full text-xs font-semibold ${is_active ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
+          {is_active ? 'Active' : 'Inactive'}
         </span>
       )
     },
   ];
 
   const formFields = [
-    { name: 'title', label: 'Service Name', required: true },
+    { name: 'service_name', label: 'Service Name', required: true },
     { name: 'description', label: 'Description', type: 'textarea' },
+    { name: 'price_range', label: 'Price Range (e.g., ₹500 - ₹2000)' },
+    { name: 'estimated_time', label: 'Estimated Time (e.g., 1-2 hours)' },
+    { name: 'brand_compatibility', label: 'Brand Compatibility (optional)', type: 'textarea', placeholder: 'All brands, Samsung, Apple, etc.' },
     { 
-      name: 'status', 
+      name: 'is_active', 
       label: 'Status', 
       type: 'select', 
       options: [
-        { value: 'Active', label: 'Active' },
-        { value: 'Inactive', label: 'Inactive' }
+        { value: true, label: 'Active' },
+        { value: false, label: 'Inactive' }
       ] 
     },
   ];
@@ -55,24 +67,42 @@ const AdminMobileRepairing = () => {
     setIsEditing(true);
   };
 
-  const handleDelete = (item) => {
-    if (window.confirm(`Delete ${item.title}?`)) {
-      setServices(prev => prev.filter(i => i.id !== item.id));
-      toast({ title: 'Deleted', description: 'Repair service removed successfully.' });
+  const handleDelete = async (item) => {
+    if (window.confirm(`Delete ${item.service_name}?`)) {
+      try {
+        await repairingAPI.delete(item.id);
+        toast({ title: 'Deleted', description: 'Repair service removed successfully.' });
+        fetchServices();
+      } catch (error) {
+        toast({ title: 'Error', description: 'Failed to delete service', variant: 'destructive' });
+      }
     }
   };
 
-  const handleSave = (formData) => {
-    if (currentItem) {
-      setServices(prev => prev.map(i => i.id === currentItem.id ? { ...formData, id: i.id } : i));
-      toast({ title: 'Updated', description: 'Service updated successfully.' });
-    } else {
-      setServices(prev => [...prev, { ...formData, id: Date.now() }]);
-      toast({ title: 'Created', description: 'New service added successfully.' });
+  const handleSave = async (formData) => {
+    try {
+      if (currentItem) {
+        await repairingAPI.update({ ...formData, id: currentItem.id });
+        toast({ title: 'Updated', description: 'Service updated successfully.' });
+      } else {
+        await repairingAPI.create(formData);
+        toast({ title: 'Created', description: 'New service added successfully.' });
+      }
+      setIsEditing(false);
+      setCurrentItem(null);
+      fetchServices();
+    } catch (error) {
+      toast({ title: 'Error', description: 'Failed to save service', variant: 'destructive' });
     }
-    setIsEditing(false);
-    setCurrentItem(null);
   };
+  
+  if (loading) {
+    return (
+      <div className="flex items-center juis_active: true4">
+        <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">

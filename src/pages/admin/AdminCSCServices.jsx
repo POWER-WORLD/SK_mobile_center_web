@@ -1,47 +1,51 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useToast } from '@/components/ui/use-toast';
-import useLocalStorage from '@/hooks/useLocalStorage';
+import { cscServicesAPI } from '@/services/api';
 import AdminTable from '@/components/admin/AdminTable';
 import AdminForm from '@/components/admin/AdminForm';
-import { Plus } from 'lucide-react';
+import { Plus, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
-const DEFAULT_CSC_SERVICES = [
-  { id: 1, title: 'Online Form Filling', description: 'Jobs, Exams, Admissions', status: 'Active' },
-  { id: 2, title: 'Aadhaar Services', description: 'Updates & Corrections', status: 'Active' },
-  { id: 3, title: 'PAN Card', description: 'New & Corrections', status: 'Active' },
-  { id: 4, title: 'PM Schemes', description: 'PM Kisan, PM Awas', status: 'Active' },
-  { id: 5, title: 'Insurance', description: 'Vehicle & Health', status: 'Active' },
-  { id: 6, title: 'Pension', description: 'Old age, Widow', status: 'Active' },
-  { id: 7, title: 'Digital Seva', description: 'All CSC Services', status: 'Active' },
-  { id: 8, title: 'Printing & Scan', description: 'Color/BW, Lamination', status: 'Active' },
-  { id: 9, title: 'Passport/Visa', description: 'Application Assistance', status: 'Active' },
-  { id: 10, title: 'Bill Payments', description: 'Electricity, Recharge', status: 'Active' },
-];
-
 const AdminCSCServices = () => {
-  const [services, setServices] = useLocalStorage('cscServices', DEFAULT_CSC_SERVICES);
+  const [services, setServices] = useState([]);
   const [isEditing, setIsEditing] = useState(false);
   const [currentItem, setCurrentItem] = useState(null);
+  const [loading, setLoading] = useState(true);
   const { toast } = useToast();
 
+  useEffect(() => {
+    fetchServices();
+  }, []);
+
+  const fetchServices = async () => {
+    try {
+      setLoading(true);
+      const data = await cscServicesAPI.getAll();
+      setServices(data);
+    } catch (error) {
+      toast({ title: 'Error', description: 'Failed to load services', variant: 'destructive' });
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const columns = [
-    { key: 'title', label: 'Service Name' },
+    { key: 'name', label: 'Service Name' },
     { key: 'category', label: 'Category' },
     { key: 'description', label: 'Description' },
     {
-      key: 'status',
+      key: 'is_active',
       label: 'Status',
-      render: (status) => (
-        <span className={`px-2 py-1 rounded-full text-xs font-semibold ${status === 'Active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
-          {status}
+      render: (is_active) => (
+        <span className={`px-2 py-1 rounded-full text-xs font-semibold ${is_active ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
+          {is_active ? 'Active' : 'Inactive'}
         </span>
       )
     },
   ];
 
   const formFields = [
-    { name: 'title', label: 'Service Name', required: true },
+    { name: 'name', label: 'Service Name', required: true },
     {
       name: 'category',
       label: 'Category',
@@ -56,12 +60,12 @@ const AdminCSCServices = () => {
     },
     { name: 'description', label: 'Description', type: 'textarea' },
     {
-      name: 'status',
+      name: 'is_active',
       label: 'Status',
       type: 'select',
       options: [
-        { value: 'Active', label: 'Active' },
-        { value: 'Inactive', label: 'Inactive' }
+        { value: true, label: 'Active' },
+        { value: false, label: 'Inactive' }
       ]
     },
   ];
@@ -71,24 +75,42 @@ const AdminCSCServices = () => {
     setIsEditing(true);
   };
 
-  const handleDelete = (item) => {
-    if (window.confirm(`Delete ${item.title}?`)) {
-      setServices(prev => prev.filter(i => i.id !== item.id));
-      toast({ title: 'Deleted', description: 'Service removed successfully.' });
+  const handleDelete = async (item) => {
+    if (window.confirm(`Delete ${item.name}?`)) {
+      try {
+        await cscServicesAPI.delete(item.id);
+        toast({ title: 'Deleted', description: 'Service removed successfully.' });
+        fetchServices();
+      } catch (error) {
+        toast({ title: 'Error', description: 'Failed to delete service', variant: 'destructive' });
+      }
     }
   };
 
-  const handleSave = (formData) => {
-    if (currentItem) {
-      setServices(prev => prev.map(i => i.id === currentItem.id ? { ...formData, id: i.id } : i));
-      toast({ title: 'Updated', description: 'Service updated successfully.' });
-    } else {
-      setServices(prev => [...prev, { ...formData, id: Date.now() }]);
-      toast({ title: 'Created', description: 'New service added successfully.' });
+  const handleSave = async (formData) => {
+    try {
+      if (currentItem) {
+        await cscServicesAPI.update({ ...formData, id: currentItem.id });
+        toast({ title: 'Updated', description: 'Service updated successfully.' });
+      } else {
+        await cscServicesAPI.create(formData);
+        toast({ title: 'Created', description: 'New service added successfully.' });
+      }
+      setIsEditing(false);
+      setCurrentItem(null);
+      fetchServices();
+    } catch (error) {
+      toast({ title: 'Error', description: 'Failed to save service', variant: 'destructive' });
     }
-    setIsEditing(false);
-    setCurrentItem(null);
   };
+  
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -102,7 +124,7 @@ const AdminCSCServices = () => {
       {isEditing ? (
         <AdminForm 
           fields={formFields} 
-          initialValues={currentItem || { status: 'Active' }} 
+          initialValues={currentItem || { is_active: true }} 
           onSubmit={handleSave} 
           onCancel={() => setIsEditing(false)} 
           title={currentItem ? 'Edit Service' : 'Add New Service'}
