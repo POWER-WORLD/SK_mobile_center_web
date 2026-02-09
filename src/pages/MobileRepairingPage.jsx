@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet';
 import { motion } from 'framer-motion';
-import { Smartphone, Battery, Zap, Volume2, Droplets, Settings, CheckCircle, Shield, Award, Clock, Star, Wrench, Loader2 } from 'lucide-react';
+import { Smartphone, Battery, Zap, Volume2, Droplets, Settings, CheckCircle, Shield, Award, Clock, Star, Wrench, Loader2, Tag } from 'lucide-react';
 import { repairingAPI } from '@/services/api';
 import HeroSection from '@/components/ui/HeroSection';
 import GlassCard from '@/components/ui/GlassCard';
