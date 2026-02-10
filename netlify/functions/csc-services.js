@@ -50,18 +50,35 @@ export async function handler(event) {
         };
       }
 
-      const result = await query(
-        `INSERT INTO csc_services (name, description, detailed_description, icon, category) 
-         VALUES ($1, $2, $3, $4, $5) 
-         RETURNING *`,
-        [name, description, detailed_description, icon, category]
-      );
+      // Try with detailed_description first, fallback if column doesn't exist
+      try {
+        const result = await query(
+          `INSERT INTO csc_services (name, description, detailed_description, icon, category) 
+           VALUES ($1, $2, $3, $4, $5) 
+           RETURNING *`,
+          [name, description, detailed_description, icon, category]
+        );
 
-      return {
-        statusCode: 201,
-        headers,
-        body: JSON.stringify({ service: result.rows[0] }),
-      };
+        return {
+          statusCode: 201,
+          headers,
+          body: JSON.stringify({ service: result.rows[0] }),
+        };
+      } catch (err) {
+        // Fallback for databases without detailed_description column
+        const result = await query(
+          `INSERT INTO csc_services (name, description, icon, category) 
+           VALUES ($1, $2, $3, $4) 
+           RETURNING *`,
+          [name, description, icon, category]
+        );
+
+        return {
+          statusCode: 201,
+          headers,
+          body: JSON.stringify({ service: result.rows[0] }),
+        };
+      }
     }
 
     // PUT - Update service
@@ -76,33 +93,64 @@ export async function handler(event) {
         };
       }
 
-      const result = await query(
-        `UPDATE csc_services 
-         SET name = COALESCE($1, name),
-             description = COALESCE($2, description),
-             detailed_description = COALESCE($3, detailed_description),
-             icon = COALESCE($4, icon),
-             category = COALESCE($5, category),
-             is_active = COALESCE($6, is_active),
-             updated_at = CURRENT_TIMESTAMP
-         WHERE id = $7
-         RETURNING *`,
-        [name, description, detailed_description, icon, category, is_active, id]
-      );
+      // Try with detailed_description first, fallback if column doesn't exist
+      try {
+        const result = await query(
+          `UPDATE csc_services 
+           SET name = COALESCE($1, name),
+               description = COALESCE($2, description),
+               detailed_description = COALESCE($3, detailed_description),
+               icon = COALESCE($4, icon),
+               category = COALESCE($5, category),
+               is_active = COALESCE($6, is_active),
+               updated_at = CURRENT_TIMESTAMP
+           WHERE id = $7
+           RETURNING *`,
+          [name, description, detailed_description, icon, category, is_active, id]
+        );
 
-      if (result.rows.length === 0) {
+        if (result.rows.length === 0) {
+          return {
+            statusCode: 404,
+            headers,
+            body: JSON.stringify({ error: 'Service not found' }),
+          };
+        }
+
         return {
-          statusCode: 404,
+          statusCode: 200,
           headers,
-          body: JSON.stringify({ error: 'Service not found' }),
+          body: JSON.stringify({ service: result.rows[0] }),
+        };
+      } catch (err) {
+        // Fallback for databases without detailed_description column
+        const result = await query(
+          `UPDATE csc_services 
+           SET name = COALESCE($1, name),
+               description = COALESCE($2, description),
+               icon = COALESCE($3, icon),
+               category = COALESCE($4, category),
+               is_active = COALESCE($5, is_active),
+               updated_at = CURRENT_TIMESTAMP
+           WHERE id = $6
+           RETURNING *`,
+          [name, description, icon, category, is_active, id]
+        );
+
+        if (result.rows.length === 0) {
+          return {
+            statusCode: 404,
+            headers,
+            body: JSON.stringify({ error: 'Service not found' }),
+          };
+        }
+
+        return {
+          statusCode: 200,
+          headers,
+          body: JSON.stringify({ service: result.rows[0] }),
         };
       }
-
-      return {
-        statusCode: 200,
-        headers,
-        body: JSON.stringify({ service: result.rows[0] }),
-      };
     }
 
     // DELETE - Delete service
