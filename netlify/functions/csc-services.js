@@ -40,7 +40,7 @@ export async function handler(event) {
 
     // POST - Create new service
     if (event.httpMethod === 'POST') {
-      const { name, description, icon, category } = JSON.parse(event.body);
+      const { name, description, detailed_description, icon, category } = JSON.parse(event.body);
 
       if (!name) {
         return {
@@ -51,10 +51,10 @@ export async function handler(event) {
       }
 
       const result = await query(
-        `INSERT INTO csc_services (name, description, icon, category) 
-         VALUES ($1, $2, $3, $4) 
+        `INSERT INTO csc_services (name, description, detailed_description, icon, category) 
+         VALUES ($1, $2, $3, $4, $5) 
          RETURNING *`,
-        [name, description, icon, category]
+        [name, description, detailed_description, icon, category]
       );
 
       return {
@@ -66,7 +66,7 @@ export async function handler(event) {
 
     // PUT - Update service
     if (event.httpMethod === 'PUT') {
-      const { id, name, description, icon, category, is_active } = JSON.parse(event.body);
+      const { id, name, description, detailed_description, icon, category, is_active } = JSON.parse(event.body);
 
       if (!id) {
         return {
@@ -80,13 +80,14 @@ export async function handler(event) {
         `UPDATE csc_services 
          SET name = COALESCE($1, name),
              description = COALESCE($2, description),
-             icon = COALESCE($3, icon),
-             category = COALESCE($4, category),
-             is_active = COALESCE($5, is_active),
+             detailed_description = COALESCE($3, detailed_description),
+             icon = COALESCE($4, icon),
+             category = COALESCE($5, category),
+             is_active = COALESCE($6, is_active),
              updated_at = CURRENT_TIMESTAMP
-         WHERE id = $6
+         WHERE id = $7
          RETURNING *`,
-        [name, description, icon, category, is_active, id]
+        [name, description, detailed_description, icon, category, is_active, id]
       );
 
       if (result.rows.length === 0) {

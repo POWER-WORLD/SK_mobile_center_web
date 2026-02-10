@@ -11,6 +11,7 @@ import HeroSection from '@/components/ui/HeroSection';
 import CategoryChips from '@/components/ui/CategoryChips';
 import GlassCard from '@/components/ui/GlassCard';
 import TrustBadge from '@/components/ui/TrustBadge';
+import ServiceDetailModal from '@/components/ServiceDetailModal';
 
 const ICON_MAP = {
   'Online Form Filling': FileText,
@@ -36,6 +37,8 @@ function CSCServicesPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [activeCategory, setActiveCategory] = useState('All');
+  const [selectedService, setSelectedService] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
     const fetchServices = async () => {
@@ -78,7 +81,7 @@ function CSCServicesPage() {
           badge="CSC Authorized Center"
           backgroundImage="https://images.unsplash.com/photo-1641699439750-dd460f65cb92"
           gradientOverlay="bg-gradient-to-r from-blue-900/90 via-blue-800/80 to-green-900/80"
-          primaryAction={{ label: "Call Now", onClick: () => window.location.href='tel:+919876543210' }}
+          primaryAction={{ label: "Call Now", onClick: () => window.location.href='tel:+916393979967' }}
           secondaryAction={{ label: "Contact Us", onClick: () => window.location.href='/contact' }}
         />
 
@@ -119,7 +122,15 @@ function CSCServicesPage() {
                         <span className="text-xs font-semibold px-3 py-1 bg-blue-50 text-blue-600 rounded-full border border-blue-100">
                           {service.category || 'Service'}
                         </span>
-                        <button className="text-blue-600 text-sm font-bold hover:underline">Details &rarr;</button>
+                        <button 
+                          onClick={() => {
+                            setSelectedService(service);
+                            setIsModalOpen(true);
+                          }}
+                          className="text-blue-600 text-sm font-bold hover:underline"
+                        >
+                          Details &rarr;
+                        </button>
                       </div>
                     </GlassCard>
                   );
@@ -142,6 +153,16 @@ function CSCServicesPage() {
           )}
         </div>
       </div>
+
+      {/* Service Detail Modal */}
+      <ServiceDetailModal 
+        isOpen={isModalOpen}
+        onClose={() => {
+          setIsModalOpen(false);
+          setSelectedService(null);
+        }}
+        service={selectedService}
+      />
     </>
   );
 }

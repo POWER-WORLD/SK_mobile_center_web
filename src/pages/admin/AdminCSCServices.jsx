@@ -52,13 +52,18 @@ const AdminCSCServices = () => {
       type: 'select',
       required: true,
       options: [
+        { value: 'Aadhaar & PAN', label: 'Aadhaar & PAN' },
         { value: 'Government Services', label: 'Government Services' },
         { value: 'Banking & Money', label: 'Banking & Money' },
         { value: 'Printing & Scanning', label: 'Printing & Scanning' },
         { value: 'Travel & Tickets', label: 'Travel & Tickets' },
+        { value: 'Health & Insurance', label: 'Health & Insurance' },
+        { value: 'Education & Certificates', label: 'Education & Certificates' },
+        { value: 'Other Services', label: 'Other Services' }
       ]
     },
-    { name: 'description', label: 'Description', type: 'textarea' },
+    { name: 'description', label: 'Short Description', type: 'textarea', rows: 2 },
+    { name: 'detailed_description', label: 'Detailed Description (supports bullet points with • or -)', type: 'textarea', rows: 8, placeholder: 'Enter detailed description here.\n\nYou can add bullet points:\n• Point 1\n• Point 2\n\nOr use dashes:\n- Item 1\n- Item 2' },
     {
       name: 'is_active',
       label: 'Status',

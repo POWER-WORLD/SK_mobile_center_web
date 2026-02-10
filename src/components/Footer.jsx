@@ -29,29 +29,42 @@ function Footer() {
               Contact Us
               <span className="absolute -bottom-2 left-0 w-12 h-1 bg-green-500 rounded-full"></span>
             </h3>
-            <div className="space-y-4 text-sm">
+            <div className="space-y-1 text-sm">
               <a
                 href="tel:+919876543210"
                 className="flex items-center space-x-3 text-gray-300 hover:text-white transition-all group p-2 hover:bg-white/5 rounded-lg -ml-2"
               >
                 <Phone className="h-5 w-5 text-green-400 group-hover:scale-110 transition-transform" />
-                <span>+91 98765 43210</span>
+                <span>+91 6393979967</span>
               </a>
               <a
-                href="https://wa.me/919876543210"
+                href="https://wa.me/916393979967"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center space-x-3 text-gray-300 hover:text-white transition-all group p-2 hover:bg-white/5 rounded-lg -ml-2"
               >
                 <MessageCircle className="h-5 w-5 text-green-400 group-hover:scale-110 transition-transform" />
-                <span>WhatsApp: +91 98765 43210</span>
+                <span>WhatsApp: +91 6393979967</span>
               </a>
               <a
-                href="mailto:info@skmobilecenter.com"
+                href="mailto:sk7360620@gmail.com"
                 className="flex items-center space-x-3 text-gray-300 hover:text-white transition-all group p-2 hover:bg-white/5 rounded-lg -ml-2"
               >
                 <Mail className="h-5 w-5 text-green-400 group-hover:scale-110 transition-transform" />
-                <span>info@skmobilecenter.com</span>
+                <span>sk7360620@gmail.com</span>
+              </a>
+              {/* instagram */}
+              <a
+                href="https://www.instagram.com/india_uk12/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center space-x-3 text-gray-300 hover:text-white transition-all group p-2 hover:bg-white/5 rounded-lg -ml-2"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24" className="h-5 w-5 text-green-400 group-hover:scale-110 transition-transform">
+                  <path d="M7.75 2h8.5A5.75 5.75 0 0122 7.75v8.5A5.75 5.75 0 0116.25 22h-8.5A5.75 5.75 0 012 16.25v-8.5A5.75 5.75 0 017.75 2zm0 1.5A4.25 4.25 0 003.5 7.75v8.5A4.25 4.25 0 007.75 20h8.5A4.25 4.25 0 0020.5 15.25v-8.5A4.25 4.25 0 0016.25 3h-8.5zM12 7a5 5
+            0 110 10 5 5 0 010-10zm0 1.5a3.5 3.5 0 100 7 3.5 3.5 0 000-7zm4.75-.75a1.25 1.25 0 112.5 0 1.25 1.25 0 01-2.5 0z" />
+                </svg>
+                <span>Instagram: @india_uk12</span>
               </a>
             </div>
           </div>
@@ -112,8 +125,8 @@ function Footer() {
             © {new Date().getFullYear()} SK Mobile Center. All rights reserved. | CSC Authorized Service Center
           </p>
         </div>
-      </div>
-    </footer>
+      </div >
+    </footer >
   );
 }
 

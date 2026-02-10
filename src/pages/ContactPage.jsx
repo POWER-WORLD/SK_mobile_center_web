@@ -118,8 +118,8 @@ function ContactPage() {
                     </div>
                     <div>
                       <h3 className="font-bold text-gray-900">Phone Number</h3>
-                      <a href="tel:+919876543210" className="text-blue-600 hover:text-blue-800 font-medium block mt-1 text-lg">
-                        +91 98765 43210
+                      <a href="tel:+916393979967" className="text-blue-600 hover:text-blue-800 font-medium block mt-1 text-lg">
+                        +91 6393979967
                       </a>
                       <p className="text-sm text-gray-500">Available 9 AM - 10 PM</p>
                     </div>
@@ -131,8 +131,8 @@ function ContactPage() {
                     </div>
                     <div>
                       <h3 className="font-bold text-gray-900">WhatsApp</h3>
-                      <a href="https://wa.me/919876543210" target="_blank" rel="noopener noreferrer" className="text-green-600 hover:text-green-800 font-medium block mt-1 text-lg">
-                        +91 98765 43210
+                      <a href="https://wa.me/916393979967" target="_blank" rel="noopener noreferrer" className="text-green-600 hover:text-green-800 font-medium block mt-1 text-lg">
+                        +91 63939 79967
                       </a>
                       <p className="text-sm text-gray-500">Chat with us directly</p>
                     </div>
@@ -144,8 +144,8 @@ function ContactPage() {
                     </div>
                     <div>
                       <h3 className="font-bold text-gray-900">Email Address</h3>
-                      <a href="mailto:info@skmobilecenter.com" className="text-purple-600 hover:text-purple-800 font-medium block mt-1 text-lg break-all">
-                        info@skmobilecenter.com
+                      <a href="mailto:sk7360620@gmail.com" className="text-purple-600 hover:text-purple-800 font-medium block mt-1 text-lg break-all">
+                        sk7360620@gmail.com
                       </a>
                       <p className="text-sm text-gray-500">Expect a reply within 24 hours</p>
                     </div>
@@ -184,7 +184,7 @@ function ContactPage() {
                     size="lg"
                     className="flex-1 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold shadow-lg h-12"
                   >
-                    <a href="tel:+919876543210">
+                    <a href="tel:+916393979967">
                       <Phone className="mr-2 h-5 w-5" />
                       Call Now
                     </a>
@@ -195,7 +195,7 @@ function ContactPage() {
                     className="flex-1 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white font-semibold shadow-lg h-12"
                   >
                     <a
-                      href="https://wa.me/919876543210"
+                      href="https://wa.me/916393979967"
                       target="_blank"
                       rel="noopener noreferrer"
                     >
@@ -337,7 +337,7 @@ function ContactPage() {
             <div className="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100 p-2">
                <div className="relative w-full h-[400px] bg-gray-200 rounded-xl overflow-hidden">
                 <iframe
-                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3488.5!2d79.5!3d28.9!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMjjCsDU0JzAwLjAiTiA3OcKwMzAnMDAuMCJF!5e0!3m2!1sen!2sin!4v1234567890"
+                    src="https://www.google.com/maps/embed?pb=!1m17!1m12!1m3!1d1064.9995896984872!2d79.50913826963469!3d28.93835417212438!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m2!1m1!2zMjjCsDU2JzE4LjEiTiA3OcKwMzAnMzUuMiJF!5e1!3m2!1sen!2sin!4v1770729993597!5m2!1sen!2sin" 
                     width="100%"
                     height="100%"
                     style={{ border: 0 }}

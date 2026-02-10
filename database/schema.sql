@@ -18,6 +18,7 @@ CREATE TABLE IF NOT EXISTS csc_services (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   name VARCHAR(255) NOT NULL,
   description TEXT,
+  detailed_description TEXT,
   icon VARCHAR(100),
   category VARCHAR(100),
   is_active BOOLEAN DEFAULT true,
