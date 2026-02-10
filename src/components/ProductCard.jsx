@@ -10,7 +10,7 @@ function ProductCard({ product, onEdit, onDelete }) {
   // Calculate prices
   const finalPrice = Math.round(originalPrice - (originalPrice * discount) / 100);
   const savings = originalPrice - finalPrice;
-  const isAvailable = status === 'Available';
+  const isAvailable = status === 'in_stock';
 
   return (
     <motion.div
