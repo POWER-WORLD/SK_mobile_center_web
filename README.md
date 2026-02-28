@@ -71,68 +71,10 @@
 ### 🔐 Admin — Mobile Repairing Management
 ![Admin Mobile Repairing](public/images/Screenshot%202026-02-28%20212541.png)
 
----
-
-## 3. Folder Structure
-
-```
-sk_mobile_center_web/
-├── index.html               # App entry point
-├── vite.config.js           # Vite config + path aliases (@/)
-├── tailwind.config.js       # Tailwind theme extensions
-├── netlify.toml             # Netlify deploy config
-├── package.json
-├── public/images/           # App screenshots
-├── database/init-db.js      # PostgreSQL schema setup
-├── netlify/functions/       # Serverless API endpoints
-└── src/
-    ├── main.jsx             # React DOM entry
-    ├── App.jsx              # Root — routing + providers
-    ├── index.css            # Global styles + CSS tokens
-    ├── layouts/
-    │   └── MainLayout.jsx   # Header + <Outlet> + Footer
-    ├── pages/
-    │   ├── HomePage.jsx
-    │   ├── CSCServicesPage.jsx
-    │   ├── MobileAccessoriesPage.jsx
-    │   ├── MobileRepairingPage.jsx
-    │   ├── ContactPage.jsx
-    │   └── admin/
-    │       ├── AdminLogin.jsx
-    │       ├── AdminDashboard.jsx
-    │       ├── AdminCSCServices.jsx
-    │       ├── AdminMobileAccessories.jsx
-    │       └── AdminMobileRepairing.jsx
-    ├── components/
-    │   ├── Header.jsx        # Sticky nav with mobile menu
-    │   ├── Footer.jsx        # Contact info + quick links
-    │   ├── ProductCard.jsx   # Product with price/discount/status
-    │   ├── ProductModal.jsx  # Product detail modal
-    │   ├── ServiceDetailModal.jsx
-    │   ├── DeleteConfirmation.jsx
-    │   ├── ProtectedRoute.jsx
-    │   ├── ErrorBoundary.jsx
-    │   ├── ScrollToTop.jsx
-    │   ├── admin/
-    │   │   ├── AdminForm.jsx   # Generic field-driven CRUD form
-    │   │   └── AdminTable.jsx  # Admin data table
-    │   └── ui/
-    │       ├── button.jsx      # Radix + CVA button variants
-    │       ├── toast.jsx / toaster.jsx / use-toast.js
-    │       ├── HeroSection.jsx
-    │       ├── GlassCard.jsx
-    │       ├── GlassButton.jsx
-    │       ├── CategoryChips.jsx
-    │       └── TrustBadge.jsx
-    ├── context/AdminContext.jsx  # Global admin auth state
-    ├── hooks/useLocalStorage.js  # localStorage-synced useState
-    ├── services/api.js           # All Netlify Function API calls
-    └── lib/utils.js              # cn() — Tailwind class merger
-```
 
 ---
 
-## 4. Components
+## 3. Components
 
 | Component | Purpose | Key Props |
 |---|---|---|
@@ -157,7 +99,7 @@ sk_mobile_center_web/
 
 ---
 
-## 5. Pages
+## 4. Pages
 
 | Page | Route | Description | Components Used |
 |---|---|---|---|
@@ -174,7 +116,7 @@ sk_mobile_center_web/
 
 ---
 
-## 6. Routing
+## 5. Routing
 
 ```
 BrowserRouter
@@ -193,7 +135,7 @@ BrowserRouter
 
 ---
 
-## 7. State Management
+## 6. State Management
 
 **No Redux.** Uses React Context + local state + localStorage.
 
@@ -225,7 +167,7 @@ cn('px-4', isActive && 'bg-white', 'rounded-lg') // safe Tailwind merge
 
 ---
 
-## 8. Styling System
+## 7. Styling System
 
 ### `src/index.css`
 - **Fonts:** Google Fonts — `Manrope` (body) + `Poppins` (display)
@@ -249,7 +191,7 @@ Extends Tailwind with `font-display` (Poppins), `shadow-glow`, custom keyframes 
 
 ---
 
-## 9. Dependencies
+## 8. Dependencies
 
 | Package | Purpose |
 |---|---|
@@ -271,35 +213,21 @@ Extends Tailwind with `font-display` (Poppins), `shadow-glow`, custom keyframes 
 
 ---
 
-## 10. How to Run
+## 9. How to Run
 
 ```bash
 # 1. Install dependencies
 npm install
 
-# 2. Set up environment
-cp .env.example .env
-# Fill in: DATABASE_URL, JWT_SECRET, ADMIN_USERNAME, ADMIN_PASSWORD_HASH
-
-# 3. Initialize database
-npm run init-db
-
-# 4a. Run with Netlify Functions (full stack)
-netlify dev      # → http://localhost:8888
-
-# 4b. Run frontend only
+# 2. Run frontend only
 npm run dev      # → http://localhost:3000
 
-# Build for production
+# 3. Build for production
 npm run build
-
-# Lint
-npm run lint
-```
 
 ---
 
-## 11. Future Improvements
+## 10. Future Improvements
 
 - **Performance:** Lazy-load admin pages with `React.lazy`, add skeleton loaders, optimize images with WebP + `srcset`
 - **Structure:** Migrate to TypeScript, extract data-fetching into custom hooks (`useCSCServices`, `useAccessories`)
