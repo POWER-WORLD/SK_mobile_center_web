@@ -224,9 +224,9 @@ npm run dev      # → http://localhost:3000
 
 # 3. Build for production
 npm run build
+```
 
 ---
-
 ## 10. Future Improvements
 
 - **Performance:** Lazy-load admin pages with `React.lazy`, add skeleton loaders, optimize images with WebP + `srcset`
